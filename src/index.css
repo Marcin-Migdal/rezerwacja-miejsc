@@ -16,6 +16,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+p {
+  margin: 0;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
@@ -23,6 +27,7 @@ code {
 
 .App {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100vw;
@@ -71,4 +76,67 @@ code {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+}
+
+.seats-container {
+  display: flex;
+  flex-direction: column;
+}
+.seats-row {
+  display: flex;
+}
+
+.seat-container {
+  margin: 3px;
+}
+
+.empty-block {
+  width: 55px;
+  height: 40px;
+  visibility: hidden;
+}
+
+.seat-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 55px;
+  height: 40px;
+  border: 1px solid black;
+}
+
+.seat-content.unavailable {
+  background-color: #444;
+}
+
+.seat-content.reserved {
+  background-color: #ff9933;
+}
+
+.bottom-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 40px;
+  padding: 3px;
+}
+
+.seat-description {
+  display: flex;
+  align-items: center;
+}
+
+.seat-description p {
+  margin-left: 12px;
+}
+
+.bottom-container .ui.button {
+  font-size: 1.4rem;
+  padding: 1.25rem 4rem;
+  margin: 0;
+}
+
+.loader-position {
+  height: 100%;
+  position: relative;
 }

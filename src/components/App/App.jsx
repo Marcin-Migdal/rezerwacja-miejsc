@@ -7,7 +7,7 @@ export const App = () => {
       <Switch>
         <Home exact path="/" />
         <Route
-          path="/reservation/:seats/:nextToEachOther"
+          path="/reservation/:seatsAmount/:nextToEachOther"
           component={Reservation}
         />
         <Route render={() => <Redirect to={{ pathname: "/" }} />} />
