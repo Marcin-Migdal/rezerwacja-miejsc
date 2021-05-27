@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { Button, Checkbox, Input } from "semantic-ui-react";
 
 export const Home = () => {
   let inputRef = useRef();
-  const [inputValue, setInputValue] = useState(0);
+  const history = useHistory();
+  const [inputValue, setInputValue] = useState(1);
   const [nextToEachOther, setNextToEachOther] = useState(false);
 
   useEffect(() => {
@@ -13,13 +14,25 @@ export const Home = () => {
     }
   }, [inputRef]);
 
-  const handleInputChange = (value) => {
-    if (value >= 0) {
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    if (value >= 1) {
       setInputValue(value);
     }
   };
+
   const handleCheckBoxChange = () => {
     setNextToEachOther(!nextToEachOther);
+  };
+
+  const goToReservationPage = () => {
+    history.push("reservation/" + inputValue + "/" + nextToEachOther);
+  };
+
+  const handlePressEnter = (e) => {
+    if (e.key === "Enter") {
+      goToReservationPage();
+    }
   };
 
   return (
@@ -27,10 +40,11 @@ export const Home = () => {
       <label className="label-text">
         Liczba miejsc:
         <Input
+          onKeyPress={handlePressEnter}
           type="number"
           ref={inputRef}
           value={inputValue}
-          onChange={(e) => handleInputChange(e.target.value)}
+          onChange={handleInputChange}
         />
       </label>
       <Checkbox
@@ -40,8 +54,8 @@ export const Home = () => {
         onChange={handleCheckBoxChange}
       />
       <Button
-        as={Link}
-        to={{ pathname: "reservation/" + inputValue + "/" + nextToEachOther }}
+        disabled={!inputValue || inputValue === 0}
+        onClick={goToReservationPage}
       >
         Wybierz miejsca
       </Button>

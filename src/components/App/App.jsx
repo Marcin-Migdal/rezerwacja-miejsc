@@ -1,5 +1,5 @@
 import { Home, Reservation } from "components";
-import { Route, Switch } from "react-router-dom";
+import { Redirect, Route, Switch } from "react-router-dom";
 
 export const App = () => {
   return (
@@ -10,6 +10,7 @@ export const App = () => {
           path="/reservation/:seats/:nextToEachOther"
           component={Reservation}
         />
+        <Route render={() => <Redirect to={{ pathname: "/" }} />} />
       </Switch>
     </div>
   );
