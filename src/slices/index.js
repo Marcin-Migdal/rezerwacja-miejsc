@@ -1,8 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
-import counterReducer from './reservationSlice';
+import reservationReducer from './reservationSlice';
 
 export const store = configureStore({
   reducer: {
-    reservation: counterReducer,
+    reservation: reservationReducer,
   },
 });
