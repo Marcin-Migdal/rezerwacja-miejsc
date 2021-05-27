@@ -6,7 +6,10 @@ export const App = () => {
     <div className="App">
       <Switch>
         <Home exact path="/" />
-        <Route path="/reservation" component={Reservation} />
+        <Route
+          path="/reservation/:seats/:nextToEachOther"
+          component={Reservation}
+        />
       </Switch>
     </div>
   );

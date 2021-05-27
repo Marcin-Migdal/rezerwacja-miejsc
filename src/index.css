@@ -27,4 +27,48 @@ code {
   align-items: center;
   width: 100vw;
   height: 100vh;
+  font-weight: 500;
+  color: #262626;
+}
+
+.home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 3rem 4rem;
+  box-shadow: 2px 2px 4px grey;
+}
+
+.label-text {
+  font-size: 1.2rem;
+}
+
+.home-container .ui.input {
+  margin-left: 10px;
+}
+
+.home-container .ui.input > input {
+  padding: 5px 8px;
+}
+
+.home-container .ui.button {
+  padding: 15px 0;
+  width: 100%;
+  font-size: 1.25rem;
+}
+
+.home-container .ui.checkbox {
+  margin: 25px 0;
+  font-size: 1.2rem;
+}
+
+.home-container .ui.checkbox label {
+  color: #262626;
+  padding-left: 2rem;
+}
+
+.reservation-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
