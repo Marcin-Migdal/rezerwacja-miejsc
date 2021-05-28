@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  reservation: undefined,
+  reservation: [],
 };
 
 const reservationSlice = createSlice({
@@ -10,12 +10,15 @@ const reservationSlice = createSlice({
   reducers: {
     setReservation: (state, { payload }) => {
       state.reservation = payload
+    },
+    clearReservation: (state) => {
+      state.reservation = []
     }
   }
 });
 
-export const { setReservation } = reservationSlice.actions;
+export const { setReservation, clearReservation } = reservationSlice.actions;
 
-export const reservationSelector = (state) => state.reservation.reservation;
+export const reservationSelector = (state) => state.reservation;
 
 export default reservationSlice.reducer;

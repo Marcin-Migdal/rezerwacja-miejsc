@@ -1,1 +1,1 @@
-export * from './getSeats';
+export * from './axiosGetSeats';

@@ -1,125 +1,112 @@
 import { useEffect, useState } from "react";
-import { Button, Loader } from "semantic-ui-react";
-import { useParams } from "react-router";
-import { getSeats } from "api";
+import { getUpdatedSeats } from "helper";
+import { Button } from "semantic-ui-react";
+import { fetchSeats, updateSeats } from "slices/seatsSlice";
+import { batch, useDispatch } from "react-redux";
+import { useHistory, useParams } from "react-router";
+import { clearReservation, setReservation } from "slices/reservationSlice";
+import { useCustomSelector } from "hooks/useCustomSelector";
 
 export const Reservation = () => {
-  const { seatsAmount, nextToEachOther } = useParams();
-  const [seats, setSeats] = useState();
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const { seatsToReserve, nextToEachOther } = useParams();
+  const { seats, seatsAvailable, reservation } = useCustomSelector();
+
+  const [notyfication, setNotyfication] = useState("");
 
   useEffect(() => {
-    const addEmptyBox = (seatsInRow, length) => {
-      for (let i = 1; i < length; i++) {
-        seatsInRow.push({ isEmptySpace: true });
-      }
+    reservation.length > 0 && dispatch(clearReservation());
+    return () => {
+      dispatch(fetchSeats());
     };
-
-    const convertToTwoDimensonal = (seats) => {
-      let twoDimensonal = [];
-      let seatsInRow = [];
-
-      seats.forEach((seat, index) => {
-        const prevCords = seats[index - 1]?.cords;
-        const { cords } = seat;
-
-        if (cords.x > seats[index - 1]?.cords.x) {
-          twoDimensonal.push(seatsInRow);
-          seatsInRow = [];
-        }
-
-        if (cords.x !== seats[index - 1]?.cords.x && cords.y !== 0) {
-          addEmptyBox(seatsInRow, cords.y + 1);
-        }
-
-        if (cords.x === prevCords?.x && cords.y - 1 !== prevCords.y) {
-          addEmptyBox(seatsInRow, cords.y - prevCords.y);
-        }
-
-        seatsInRow.push({ ...seat, reservedByMe: false });
-      });
-
-      setSeats(twoDimensonal);
-    };
-
-    getSeats().then((res) => convertToTwoDimensonal(res));
   }, []);
 
   const handleReservation = (choosenSeat) => {
-    if (choosenSeat.reserved && !choosenSeat.reservedByMe) {
+    let updatedReservation = [];
+
+    if (choosenSeat.reservedByMe) {
+      updatedReservation = reservation.filter((s) => s.id !== choosenSeat.id);
+      notyfication && setNotyfication("");
+    } else if (reservation.length < seatsToReserve) {
+      updatedReservation.push(...reservation, choosenSeat);
+    } else {
+      setNotyfication(
+        "Nie możesz zarezerwować więcej miejsc.\n " +
+          "Usuń któreś z wybranych miejsc."
+      );
       return;
     }
-    let tempSeats = [...seats];
 
-    tempSeats.forEach((row) => {
-      row.forEach((seat) => {
-        if (seat.id === choosenSeat.id) {
-          seat.reserved = !seat.reserved;
-          seat.reservedByMe = !seat.reservedByMe;
-        }
-      });
+    const updatedSeatsAvailable = choosenSeat.reservedByMe
+      ? seatsAvailable + 1
+      : seatsAvailable - 1;
+
+    const updatedSeats = getUpdatedSeats(seats, choosenSeat);
+
+    batch(() => {
+      dispatch(updateSeats({ updatedSeats, updatedSeatsAvailable }));
+      dispatch(setReservation(updatedReservation));
     });
+  };
 
-    setSeats(tempSeats);
+  const handleConfirmation = () => {
+    history.replace("/reservationSummary");
   };
 
   return (
     <div className="reservation-container">
-      {seats ? (
-        <>
-          <div className="seats-container">
-            {seats.map((row, rowIndex) => {
-              return (
-                <div key={rowIndex} className="seats-row">
-                  {row.map((seat, seatIndex) => {
-                    return (
-                      <div
-                        className="seat-container"
-                        key={(rowIndex, seatIndex)}
-                      >
-                        {seat?.isEmptySpace ? (
-                          <div className="empty-block" />
-                        ) : (
-                          <div
-                            onClick={() => handleReservation(seat)}
-                            className={
-                              seat.reservedByMe
-                                ? "seat-content reserved"
-                                : seat.reserved
-                                ? "seat-content unavailable"
-                                : "seat-content"
-                            }
-                          />
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              );
-            })}
-          </div>
-          <div className="bottom-container">
-            <div className="seat-description">
-              <div className="seat-content" />
-              <p>Miejsca dostępne</p>
+      <span className="notyfication">{notyfication}</span>
+      <div className="seats-container">
+        {seats.map((row, rowIndex) => {
+          return (
+            <div key={rowIndex} className="seats-row">
+              {row.map((seat, seatIndex) => {
+                return (
+                  <div className="seat-container" key={(rowIndex, seatIndex)}>
+                    {seat?.isEmptySpace ? (
+                      <div className="empty-block" />
+                    ) : (
+                      <button
+                        onClick={() => handleReservation(seat)}
+                        disabled={seat.reserved && !seat.reservedByMe}
+                        className={
+                          seat.reservedByMe
+                            ? "seat-content reserved"
+                            : seat.reserved
+                            ? "seat-content unavailable"
+                            : "seat-content"
+                        }
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
-            <div className="seat-description">
-              <div className="seat-content unavailable" />
-              <p>Miejsca Zarezerwowane</p>
-            </div>
-            <div className="seat-description">
-              <div className="seat-content reserved" />
-              <p>Miejsca Zarezerwowane</p>
-            </div>
-            <Button disabled={true} className="reservation-button">
-              Rezerwuj
-            </Button>
-          </div>
-        </>
-      ) : (
-        <div className="loader-position">
-          <Loader active size="huge" />
+          );
+        })}
+      </div>
+      <div className="bottom-container">
+        <div className="seat-description">
+          <div className="seat-content" />
+          <p>Miejsca dostępne</p>
         </div>
-      )}
+        <div className="seat-description">
+          <div className="seat-content unavailable" />
+          <p>Miejsca Zarezerwowane</p>
+        </div>
+        <div className="seat-description">
+          <div className="seat-content reserved" />
+          <p>Twój wybór</p>
+        </div>
+        <Button
+          onClick={handleConfirmation}
+          disabled={reservation.length !== parseInt(seatsToReserve)}
+          className="reservation-button"
+        >
+          Rezerwuj
+        </Button>
+      </div>
     </div>
   );
 };

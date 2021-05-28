@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const getSeats = async () => {
+export const axiosGetSeats = async () => {
   return axios.get('http://localhost:3000/seats')
-    .then((res) => res.data);
+    .then((res) => res.data)
 }

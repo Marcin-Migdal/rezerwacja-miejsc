@@ -1,12 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
+import { seatsSelector } from "slices/seatsSlice";
+import { useEffect, useRef, useState } from "react";
 import { Button, Checkbox, Input } from "semantic-ui-react";
 
 export const Home = () => {
-  let inputRef = useRef();
+  const inputRef = useRef();
   const history = useHistory();
-  const [inputValue, setInputValue] = useState(1);
+  const { seatsAvailable } = useSelector(seatsSelector);
+
   const [nextToEachOther, setNextToEachOther] = useState(false);
+  const [seatsToReserve, setSeatsToReserve] = useState(1);
 
   useEffect(() => {
     if (inputRef) {
@@ -16,8 +20,8 @@ export const Home = () => {
 
   const handleInputChange = (e) => {
     const value = e.target.value;
-    if (value >= 1) {
-      setInputValue(value);
+    if (value >= 1 && value <= seatsAvailable) {
+      setSeatsToReserve(value);
     }
   };
 
@@ -26,7 +30,7 @@ export const Home = () => {
   };
 
   const goToReservationPage = () => {
-    history.push("reservation/" + inputValue + "/" + nextToEachOther);
+    history.push("reservation/" + seatsToReserve + "/" + nextToEachOther);
   };
 
   const handlePressEnter = (e) => {
@@ -43,7 +47,7 @@ export const Home = () => {
           onKeyPress={handlePressEnter}
           type="number"
           ref={inputRef}
-          value={inputValue}
+          value={seatsToReserve}
           onChange={handleInputChange}
         />
       </label>
@@ -54,7 +58,7 @@ export const Home = () => {
         onChange={handleCheckBoxChange}
       />
       <Button
-        disabled={!inputValue || inputValue === 0}
+        disabled={!seatsToReserve || seatsToReserve === 0}
         onClick={goToReservationPage}
       >
         Wybierz miejsca
