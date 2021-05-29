@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Loader } from "semantic-ui-react";
-import { Home, Reservation } from "components";
+import { Home, Reservation, Summary } from "components";
 import { useDispatch, useSelector } from "react-redux";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { fetchSeats, seatsSelector } from "slices/seatsSlice";
@@ -11,7 +11,7 @@ export const App = () => {
 
   useEffect(() => {
     dispatch(fetchSeats());
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className="App">
@@ -22,6 +22,7 @@ export const App = () => {
             path="/reservation/:seatsToReserve/:nextToEachOther"
             component={Reservation}
           />
+          <Route path="/summary" component={Summary} />
           <Route render={() => <Redirect to={{ pathname: "/" }} />} />
         </Switch>
       ) : state === "error" ? (

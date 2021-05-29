@@ -3,8 +3,12 @@ import { axiosGetSeats } from "api";
 import { convertToTwoDimensonal } from "helper";
 
 const initialState = {
+  prevSeats: [],
+  prevSeatsAvailable: 0,
+
   seats: [],
   seatsAvailable: 0,
+
   state: 'idle',
 };
 
@@ -25,12 +29,20 @@ const seatsSlice = createSlice({
     },
     updateSeats: (state, { payload }) => {
       state.seats = payload.updatedSeats
-      state.seatsAvailable = payload.updatedSeatsAvailable
+      state.seatsAvailable = payload.updatedSeatsAvailable ? payload.updatedSeatsAvailable : state.seatsAvailable
     },
+    setPrevSeats: (state) => {
+      state.prevSeats = state.seats
+      state.prevSeatsAvailable = state.seatsAvailable
+    },
+    restoreSeats: (state) => {
+      state.seats = state.prevSeats
+      state.seatsAvailable = state.prevSeatsAvailable
+    }
   }
 });
 
-export const { getSeats, getSeatsSuccess, getSeatsFailure, updateSeats } = seatsSlice.actions;
+export const { getSeats, getSeatsSuccess, getSeatsFailure, updateSeats, setPrevSeats, restoreSeats } = seatsSlice.actions;
 
 export const seatsSelector = (state) => state.seats;
 

@@ -1,16 +1,15 @@
-import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { seatsSelector } from "slices/seatsSlice";
 import { useEffect, useRef, useState } from "react";
 import { Button, Checkbox, Input } from "semantic-ui-react";
+import { useCustomSelector } from "hooks/useCustomSelector";
 
 export const Home = () => {
   const inputRef = useRef();
   const history = useHistory();
-  const { seatsAvailable } = useSelector(seatsSelector);
+  const { seatsAvailable } = useCustomSelector();
 
   const [nextToEachOther, setNextToEachOther] = useState(false);
-  const [seatsToReserve, setSeatsToReserve] = useState(1);
+  const [seatsToReserve, setSeatsToReserve] = useState();
 
   useEffect(() => {
     if (inputRef) {
@@ -20,17 +19,13 @@ export const Home = () => {
 
   const handleInputChange = (e) => {
     const value = e.target.value;
-    if (value >= 1 && value <= seatsAvailable) {
+    if (value >= 0 && value <= seatsAvailable) {
       setSeatsToReserve(value);
     }
   };
 
-  const handleCheckBoxChange = () => {
-    setNextToEachOther(!nextToEachOther);
-  };
-
   const goToReservationPage = () => {
-    history.push("reservation/" + seatsToReserve + "/" + nextToEachOther);
+    history.push("/reservation/" + seatsToReserve + "/" + nextToEachOther);
   };
 
   const handlePressEnter = (e) => {
@@ -55,10 +50,10 @@ export const Home = () => {
         label="Czy miejsca mają być koło siebie ?"
         className="checkbox"
         checked={nextToEachOther}
-        onChange={handleCheckBoxChange}
+        onChange={() => setNextToEachOther(!nextToEachOther)}
       />
       <Button
-        disabled={!seatsToReserve || seatsToReserve === 0}
+        disabled={!seatsToReserve || seatsToReserve == 0}
         onClick={goToReservationPage}
       >
         Wybierz miejsca

@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
-import { getUpdatedSeats } from "helper";
 import { Button } from "semantic-ui-react";
-import { fetchSeats, updateSeats } from "slices/seatsSlice";
+import { setPrevSeats, updateSeats, restoreSeats } from "slices/seatsSlice";
 import { batch, useDispatch } from "react-redux";
 import { useHistory, useParams } from "react-router";
-import { clearReservation, setReservation } from "slices/reservationSlice";
+import {
+  clearReservation,
+  completeReservation,
+  setReservation,
+} from "slices/reservationSlice";
 import { useCustomSelector } from "hooks/useCustomSelector";
+import produce from "immer";
 
 export const Reservation = () => {
   const dispatch = useDispatch();
@@ -16,13 +20,25 @@ export const Reservation = () => {
   const [notyfication, setNotyfication] = useState("");
 
   useEffect(() => {
-    reservation.length > 0 && dispatch(clearReservation());
-    return () => {
-      dispatch(fetchSeats());
-    };
-  }, []);
+    dispatch(setPrevSeats());
+  }, [dispatch]);
 
-  const handleReservation = (choosenSeat) => {
+  useEffect(() => {
+    return () => {
+      if (
+        history.location.pathname !== "/summary" &&
+        reservation.length > 0 &&
+        !history.location.pathname.startsWith("/reservation")
+      ) {
+        batch(() => {
+          dispatch(restoreSeats());
+          dispatch(clearReservation());
+        });
+      }
+    };
+  }, [history, reservation, dispatch]);
+
+  const getUpdatedReservation = (choosenSeat) => {
     let updatedReservation = [];
 
     if (choosenSeat.reservedByMe) {
@@ -38,20 +54,65 @@ export const Reservation = () => {
       return;
     }
 
+    return updatedReservation;
+  };
+
+  const getUpdatedSeats = (choosenSeat) => {
+    const updatedSeats = produce(seats, (draft) => {
+      draft.forEach((row) => {
+        row.forEach((seat) => {
+          if (seat.id === choosenSeat.id) {
+            seat.reserved = !seat.reserved;
+            seat.reservedByMe = !seat.reservedByMe;
+          }
+        });
+      });
+    });
+
     const updatedSeatsAvailable = choosenSeat.reservedByMe
       ? seatsAvailable + 1
       : seatsAvailable - 1;
 
-    const updatedSeats = getUpdatedSeats(seats, choosenSeat);
+    return { updatedSeats, updatedSeatsAvailable };
+  };
+
+  const handleReservation = (choosenSeat) => {
+    const updatedReservation = getUpdatedReservation(choosenSeat);
+
+    if (!updatedReservation) {
+      return;
+    }
+
+    const payload = getUpdatedSeats(choosenSeat);
 
     batch(() => {
-      dispatch(updateSeats({ updatedSeats, updatedSeatsAvailable }));
+      dispatch(updateSeats(payload));
       dispatch(setReservation(updatedReservation));
     });
   };
 
+  const convertSeatsToReserved = () => {
+    const updatedSeats = produce(seats, (draft) => {
+      draft.forEach((row) => {
+        row.forEach((seat) => {
+          if (seat.reservedByMe) {
+            seat.reservedByMe = false;
+          }
+        });
+      });
+    });
+
+    return updatedSeats;
+  };
+
   const handleConfirmation = () => {
-    history.replace("/reservationSummary");
+    const updatedSeats = convertSeatsToReserved();
+    batch(() => {
+      dispatch(completeReservation());
+      dispatch(updateSeats({ updatedSeats }));
+    });
+
+    history.replace("/summary");
   };
 
   return (
@@ -77,7 +138,9 @@ export const Reservation = () => {
                             ? "seat-content unavailable"
                             : "seat-content"
                         }
-                      />
+                      >
+                        {seat.id}
+                      </button>
                     )}
                   </div>
                 );

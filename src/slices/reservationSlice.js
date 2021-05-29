@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   reservation: [],
+  isComplete: false
 };
 
 const reservationSlice = createSlice({
@@ -13,11 +14,15 @@ const reservationSlice = createSlice({
     },
     clearReservation: (state) => {
       state.reservation = []
+      state.isComplete = false
+    },
+    completeReservation: (state) => {
+      state.isComplete = true
     }
   }
 });
 
-export const { setReservation, clearReservation } = reservationSlice.actions;
+export const { setReservation, clearReservation, completeReservation } = reservationSlice.actions;
 
 export const reservationSelector = (state) => state.reservation;
 

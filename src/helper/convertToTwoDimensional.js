@@ -26,6 +26,11 @@ export const convertToTwoDimensonal = (seats) => {
     }
 
     seatsInRow.push({ ...seat, reservedByMe: false });
+
+    if (seats[index + 1]?.cords.x === undefined) {
+      twoDimensonal.push(seatsInRow);
+      seatsInRow = [];
+    }
   });
 
   return twoDimensonal;

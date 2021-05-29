@@ -120,6 +120,9 @@ code {
   outline: none;
   background-color: #fff;
   transition: 0.2s;
+}
+
+.seat-container .seat-content {
   cursor: pointer;
 }
 
@@ -168,4 +171,24 @@ code {
 .loader-position {
   height: 100%;
   position: relative;
+}
+
+.summary-container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border: 1px solid lightgray;
+  box-shadow: 2px 2px 6px lightgray;
+}
+
+.summary-list {
+  list-style: none;
+  font-size: 1.1rem;
+}
+
+.summary-container .ui.button {
+  width: fit-content;
+  margin: auto;
+  margin-top: 10px;
+  font-size: 1.25rem;
 }
