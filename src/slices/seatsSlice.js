@@ -5,10 +5,8 @@ import { convertToTwoDimensonal } from "helper";
 const initialState = {
   prevSeats: [],
   prevSeatsAvailable: 0,
-
   seats: [],
   seatsAvailable: 0,
-
   state: 'idle',
 };
 

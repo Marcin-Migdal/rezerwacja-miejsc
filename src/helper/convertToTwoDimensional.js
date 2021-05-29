@@ -1,9 +1,3 @@
-const addEmptyBoxes = (seatsInRow, length) => {
-  for (let i = 1; i < length; i++) {
-    seatsInRow.push({ isEmptySpace: true });
-  }
-};
-
 export const convertToTwoDimensonal = (seats) => {
   let twoDimensonal = [];
   let seatsInRow = [];
@@ -18,11 +12,15 @@ export const convertToTwoDimensonal = (seats) => {
     }
 
     if (cords.x !== seats[index - 1]?.cords.x && cords.y !== 0) {
-      addEmptyBoxes(seatsInRow, cords.y + 1);
+      for (let i = 1; i < cords.y + 1; i++) {
+        seatsInRow.push({ isEmptySpace: true });
+      }
     }
 
     if (cords.x === prevCords?.x && cords.y - 1 !== prevCords.y) {
-      addEmptyBoxes(seatsInRow, cords.y - prevCords.y);
+      for (let i = 1; i < cords.y - prevCords.y; i++) {
+        seatsInRow.push({ isEmptySpace: true });
+      }
     }
 
     seatsInRow.push({ ...seat, reservedByMe: false });

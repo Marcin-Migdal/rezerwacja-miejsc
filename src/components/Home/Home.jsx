@@ -53,7 +53,7 @@ export const Home = () => {
         onChange={() => setNextToEachOther(!nextToEachOther)}
       />
       <Button
-        disabled={!seatsToReserve || seatsToReserve == 0}
+        disabled={!seatsToReserve || seatsToReserve === 0}
         onClick={goToReservationPage}
       >
         Wybierz miejsca

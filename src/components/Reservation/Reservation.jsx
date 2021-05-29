@@ -138,9 +138,7 @@ export const Reservation = () => {
                             ? "seat-content unavailable"
                             : "seat-content"
                         }
-                      >
-                        {seat.id}
-                      </button>
+                      />
                     )}
                   </div>
                 );
