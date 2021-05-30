@@ -116,7 +116,7 @@ export const Reservation = () => {
 
   return (
     <div className="reservation-container">
-      {hasReservedSeats?.current && (
+      {hasReservedSeats && (
         <>
           <span className="notyfication">{notyfication}</span>
           <div className="seats-container">
