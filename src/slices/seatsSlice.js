@@ -1,12 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { axiosGetSeats } from "api";
-import { convertToTwoDimensonal } from "helper";
+import { convertToTwoDimensonal, getMaxSeatsNextToEachOther } from "helper";
 
 const initialState = {
   prevSeats: [],
   prevSeatsAvailable: 0,
+
   seats: [],
   seatsAvailable: 0,
+  maxSeatsNextToEachOther: 0,
   state: 'idle',
 };
 
@@ -20,18 +22,23 @@ const seatsSlice = createSlice({
     getSeatsSuccess: (state, { payload }) => {
       state.seats = payload.seats
       state.seatsAvailable = payload.seatsAvailable
+      state.maxSeatsNextToEachOther = payload.maxSeatsNextToEachOther
       state.state = 'loaded'
     },
     getSeatsFailure: (state) => {
       state.state = 'error'
     },
+    editSeats: (state, { payload }) => {
+      state.seats = payload
+    },
     updateSeats: (state, { payload }) => {
       state.seats = payload.updatedSeats
-      state.seatsAvailable = payload.updatedSeatsAvailable ? payload.updatedSeatsAvailable : state.seatsAvailable
+      state.seatsAvailable = payload.updatedSeatsAvailable
+      state.maxSeatsNextToEachOther = payload.maxSeatsNextToEachOther
     },
-    setPrevSeats: (state) => {
-      state.prevSeats = state.seats
-      state.prevSeatsAvailable = state.seatsAvailable
+    setPrevSeats: (state, { payload }) => {
+      state.prevSeats = payload.seats
+      state.prevSeatsAvailable = payload.seatsAvailable
     },
     restoreSeats: (state) => {
       state.seats = state.prevSeats
@@ -40,7 +47,15 @@ const seatsSlice = createSlice({
   }
 });
 
-export const { getSeats, getSeatsSuccess, getSeatsFailure, updateSeats, setPrevSeats, restoreSeats } = seatsSlice.actions;
+export const {
+  getSeats,
+  getSeatsSuccess,
+  getSeatsFailure,
+  editSeats,
+  updateSeats,
+  setPrevSeats,
+  restoreSeats
+} = seatsSlice.actions;
 
 export const seatsSelector = (state) => state.seats;
 
@@ -51,9 +66,11 @@ export function fetchSeats() {
     dispatch(getSeats())
     await axiosGetSeats()
       .then(res => {
+        const twoDimensonalSeats = convertToTwoDimensonal(res);
         dispatch(getSeatsSuccess({
-          seats: convertToTwoDimensonal(res),
-          seatsAvailable: res.filter((seat) => !seat.reserved).length
+          seats: twoDimensonalSeats,
+          seatsAvailable: res.filter((seat) => !seat.reserved).length,
+          maxSeatsNextToEachOther: getMaxSeatsNextToEachOther(twoDimensonalSeats)
         }))
       })
       .catch(e => {

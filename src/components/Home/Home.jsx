@@ -1,63 +1,80 @@
-import { useHistory } from "react-router-dom";
-import { useEffect, useRef, useState } from "react";
 import { Button, Checkbox, Input } from "semantic-ui-react";
-import { useCustomSelector } from "hooks/useCustomSelector";
+import { useEffect, useRef, useState } from "react";
+import { seatsSelector } from "slices/seatsSlice";
+import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
+import "./Home.css";
 
 export const Home = () => {
   const inputRef = useRef();
   const history = useHistory();
-  const { seatsAvailable } = useCustomSelector();
+  const { seatsAvailable, maxSeatsNextToEachOther } =
+    useSelector(seatsSelector);
 
   const [nextToEachOther, setNextToEachOther] = useState(false);
-  const [seatsToReserve, setSeatsToReserve] = useState();
+  const [seatsToReserve, setSeatsToReserve] = useState(1);
+  const [notyfication, setNotyfication] = useState("");
 
   useEffect(() => {
-    if (inputRef) {
-      inputRef.current.focus();
-    }
+    inputRef.current?.focus();
   }, [inputRef]);
 
   const handleInputChange = (e) => {
     const value = e.target.value;
-    if (value >= 0 && value <= seatsAvailable) {
+    const maxInputValue = nextToEachOther
+      ? maxSeatsNextToEachOther
+      : seatsAvailable;
+
+    if (value >= 0 && value <= maxInputValue) {
+      notyfication && setNotyfication("");
       setSeatsToReserve(value);
+    } else if (value < 0) {
+      setNotyfication("Ilość miejsc nie może być ujemna");
+      setSeatsToReserve(0);
+    } else {
+      setNotyfication("Maksymalna ilość dostępnych miejsc: " + maxInputValue);
+      setSeatsToReserve(maxInputValue);
     }
+  };
+
+  const handleCheckBoxClick = () => {
+    if (maxSeatsNextToEachOther < seatsToReserve && !nextToEachOther) {
+      setSeatsToReserve(maxSeatsNextToEachOther);
+      setNotyfication(
+        "Maksymalna ilość dostępnych miejsc: " + maxSeatsNextToEachOther
+      );
+    }
+    setNextToEachOther(!nextToEachOther);
   };
 
   const goToReservationPage = () => {
     history.push("/reservation/" + seatsToReserve + "/" + nextToEachOther);
   };
 
-  const handlePressEnter = (e) => {
-    if (e.key === "Enter") {
-      goToReservationPage();
-    }
-  };
-
   return (
     <div className="home-container">
+      <p className="notyfication">{notyfication}</p>
       <label className="label-text">
         Liczba miejsc:
         <Input
-          onKeyPress={handlePressEnter}
           type="number"
           ref={inputRef}
           value={seatsToReserve}
           onChange={handleInputChange}
+          onKeyPress={(e) => e.key === "Enter" && goToReservationPage()}
         />
       </label>
       <Checkbox
-        label="Czy miejsca mają być koło siebie ?"
         className="checkbox"
         checked={nextToEachOther}
-        onChange={() => setNextToEachOther(!nextToEachOther)}
+        onChange={handleCheckBoxClick}
+        label="Czy miejsca mają być koło siebie ?"
       />
       <Button
-        disabled={!seatsToReserve || seatsToReserve === 0}
+        disabled={!seatsToReserve || parseInt(seatsToReserve) === 0}
         onClick={goToReservationPage}
-      >
-        Wybierz miejsca
-      </Button>
+        content="Wybierz miejsca"
+      />
     </div>
   );
 };

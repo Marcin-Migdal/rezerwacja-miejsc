@@ -26,7 +26,7 @@ export const App = () => {
           <Route render={() => <Redirect to={{ pathname: "/" }} />} />
         </Switch>
       ) : state === "error" ? (
-        <div>Wystąpił bład</div>
+        <div className="error">Wystąpił bład</div>
       ) : (
         <div className="loader-position">
           <Loader active size="huge" />

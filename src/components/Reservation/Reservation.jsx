@@ -1,27 +1,28 @@
-import { useEffect, useState } from "react";
 import { Button } from "semantic-ui-react";
-import { setPrevSeats, updateSeats, restoreSeats } from "slices/seatsSlice";
+import { useEffect, useState } from "react";
 import { batch, useDispatch } from "react-redux";
+import { getMaxSeatsNextToEachOther } from "helper";
 import { useHistory, useParams } from "react-router";
+import { useSetReservation } from "hooks/useSetReservation";
+import { useCustomSelector } from "hooks/useCustomSelector";
+import { restoreSeats, editSeats, updateSeats } from "slices/seatsSlice";
+import { Seat } from "components";
+import produce from "immer";
+import "./Reservation.css";
 import {
+  setReservation,
   clearReservation,
   completeReservation,
-  setReservation,
 } from "slices/reservationSlice";
-import { useCustomSelector } from "hooks/useCustomSelector";
-import produce from "immer";
 
 export const Reservation = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { seatsToReserve, nextToEachOther } = useParams();
   const { seats, seatsAvailable, reservation } = useCustomSelector();
+  const hasReservedSeats = useSetReservation(seatsToReserve, nextToEachOther);
 
   const [notyfication, setNotyfication] = useState("");
-
-  useEffect(() => {
-    dispatch(setPrevSeats());
-  }, [dispatch]);
 
   useEffect(() => {
     return () => {
@@ -58,7 +59,7 @@ export const Reservation = () => {
   };
 
   const getUpdatedSeats = (choosenSeat) => {
-    const updatedSeats = produce(seats, (draft) => {
+    return produce(seats, (draft) => {
       draft.forEach((row) => {
         row.forEach((seat) => {
           if (seat.id === choosenSeat.id) {
@@ -68,31 +69,10 @@ export const Reservation = () => {
         });
       });
     });
-
-    const updatedSeatsAvailable = choosenSeat.reservedByMe
-      ? seatsAvailable + 1
-      : seatsAvailable - 1;
-
-    return { updatedSeats, updatedSeatsAvailable };
-  };
-
-  const handleReservation = (choosenSeat) => {
-    const updatedReservation = getUpdatedReservation(choosenSeat);
-
-    if (!updatedReservation) {
-      return;
-    }
-
-    const payload = getUpdatedSeats(choosenSeat);
-
-    batch(() => {
-      dispatch(updateSeats(payload));
-      dispatch(setReservation(updatedReservation));
-    });
   };
 
   const convertSeatsToReserved = () => {
-    const updatedSeats = produce(seats, (draft) => {
+    return produce(seats, (draft) => {
       draft.forEach((row) => {
         row.forEach((seat) => {
           if (seat.reservedByMe) {
@@ -101,15 +81,34 @@ export const Reservation = () => {
         });
       });
     });
+  };
 
-    return updatedSeats;
+  const handleReservation = (choosenSeat) => {
+    const updatedReservation = getUpdatedReservation(choosenSeat);
+
+    if (updatedReservation) {
+      const updatedSeats = getUpdatedSeats(choosenSeat);
+      batch(() => {
+        dispatch(editSeats(updatedSeats));
+        dispatch(setReservation(updatedReservation));
+      });
+    }
   };
 
   const handleConfirmation = () => {
     const updatedSeats = convertSeatsToReserved();
+    const updatedSeatsAvailable = seatsAvailable - seatsToReserve;
+    const maxSeatsNextToEachOther = getMaxSeatsNextToEachOther(seats);
+
     batch(() => {
       dispatch(completeReservation());
-      dispatch(updateSeats({ updatedSeats }));
+      dispatch(
+        updateSeats({
+          updatedSeats,
+          updatedSeatsAvailable,
+          maxSeatsNextToEachOther,
+        })
+      );
     });
 
     history.replace("/summary");
@@ -117,57 +116,48 @@ export const Reservation = () => {
 
   return (
     <div className="reservation-container">
-      <span className="notyfication">{notyfication}</span>
-      <div className="seats-container">
-        {seats.map((row, rowIndex) => {
-          return (
-            <div key={rowIndex} className="seats-row">
-              {row.map((seat, seatIndex) => {
-                return (
-                  <div className="seat-container" key={(rowIndex, seatIndex)}>
-                    {seat?.isEmptySpace ? (
-                      <div className="empty-block" />
-                    ) : (
-                      <button
+      {hasReservedSeats?.current && (
+        <>
+          <span className="notyfication">{notyfication}</span>
+          <div className="seats-container">
+            {seats.map((row, rowIndex) => {
+              return (
+                <div key={rowIndex} className="seats-row">
+                  {row.map((seat, seatIndex) => {
+                    return (
+                      <Seat
+                        key={(rowIndex, seatIndex)}
+                        seat={seat}
                         onClick={() => handleReservation(seat)}
-                        disabled={seat.reserved && !seat.reservedByMe}
-                        className={
-                          seat.reservedByMe
-                            ? "seat-content reserved"
-                            : seat.reserved
-                            ? "seat-content unavailable"
-                            : "seat-content"
-                        }
                       />
-                    )}
-                  </div>
-                );
-              })}
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
+          <div className="bottom-container">
+            <div className="seat-description">
+              <div className="seat-content" />
+              <p>Miejsca dostępne</p>
             </div>
-          );
-        })}
-      </div>
-      <div className="bottom-container">
-        <div className="seat-description">
-          <div className="seat-content" />
-          <p>Miejsca dostępne</p>
-        </div>
-        <div className="seat-description">
-          <div className="seat-content unavailable" />
-          <p>Miejsca Zarezerwowane</p>
-        </div>
-        <div className="seat-description">
-          <div className="seat-content reserved" />
-          <p>Twój wybór</p>
-        </div>
-        <Button
-          onClick={handleConfirmation}
-          disabled={reservation.length !== parseInt(seatsToReserve)}
-          className="reservation-button"
-        >
-          Rezerwuj
-        </Button>
-      </div>
+            <div className="seat-description">
+              <div className="seat-content unavailable" />
+              <p>Miejsca Zarezerwowane</p>
+            </div>
+            <div className="seat-description">
+              <div className="seat-content reserved" />
+              <p>Twój wybór</p>
+            </div>
+            <Button
+              onClick={handleConfirmation}
+              disabled={reservation.length !== parseInt(seatsToReserve)}
+              className="reservation-button"
+              content="Rezerwuj"
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 };

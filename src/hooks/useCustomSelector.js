@@ -1,14 +1,10 @@
 import { useSelector } from "react-redux";
+import { reservationSelector } from "slices/reservationSlice";
+import { seatsSelector } from "slices/seatsSlice";
 
 export const useCustomSelector = () => {
-  const { seats, seatsAvailable, state, reservation, isComplete } =
-    useSelector((state) => ({
-      seats: state.seats.seats,
-      seatsAvailable: state.seats.seatsAvailable,
-      state: state.seats.state,
-      reservation: state.reservation.reservation,
-      isComplete: state.reservation.isComplete,
-    }));
+  const { seats, seatsAvailable } = useSelector(seatsSelector);
+  const { reservation } = useSelector(reservationSelector);
 
-  return { seats, seatsAvailable, state, reservation, isComplete };
+  return { seats, seatsAvailable, reservation };
 }
