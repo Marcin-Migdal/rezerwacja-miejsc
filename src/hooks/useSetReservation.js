@@ -37,7 +37,8 @@ export const useSetReservation = (seatsToReserve, nextToEachOther) => {
     seatsAvailable,
     maxSeatsNextToEachOther,
     seatsToReserve,
-    nextToEachOther
+    nextToEachOther,
+    hasReservedSeats
   ]);
 
   return hasReservedSeats;

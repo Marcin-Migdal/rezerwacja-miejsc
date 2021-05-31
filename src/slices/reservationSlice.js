@@ -12,17 +12,17 @@ const reservationSlice = createSlice({
     setReservation: (state, { payload }) => {
       state.reservation = payload
     },
+    completeReservation: (state) => {
+      state.isComplete = true
+    },
     clearReservation: (state) => {
       state.reservation = []
       state.isComplete = false
-    },
-    completeReservation: (state) => {
-      state.isComplete = true
     }
   }
 });
 
-export const { setReservation, clearReservation, completeReservation } = reservationSlice.actions;
+export const { setReservation, completeReservation, clearReservation } = reservationSlice.actions;
 
 export const reservationSelector = (state) => state.reservation;
 

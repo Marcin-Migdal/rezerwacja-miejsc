@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { axiosGetSeats } from "api";
+import axiosGetSeats from "api/axiosGetSeats";
 import { convertToTwoDimensonal, getMaxSeatsNextToEachOther } from "helper";
 
 const initialState = {

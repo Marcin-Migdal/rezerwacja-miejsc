@@ -1,14 +1,18 @@
 import { Button } from "semantic-ui-react";
 import { useEffect, useState } from "react";
 import { batch, useDispatch } from "react-redux";
-import { getMaxSeatsNextToEachOther } from "helper";
 import { useHistory, useParams } from "react-router";
 import { useSetReservation } from "hooks/useSetReservation";
 import { useCustomSelector } from "hooks/useCustomSelector";
 import { restoreSeats, editSeats, updateSeats } from "slices/seatsSlice";
 import { Seat } from "components";
-import produce from "immer";
 import "./Reservation.css";
+import {
+  getUpdatedSeats,
+  getUpdatedReservation,
+  getMaxSeatsNextToEachOther,
+  convertSeatsToReserved,
+} from "helper";
 import {
   setReservation,
   clearReservation,
@@ -39,64 +43,30 @@ export const Reservation = () => {
     };
   }, [history, reservation, dispatch]);
 
-  const getUpdatedReservation = (choosenSeat) => {
-    let updatedReservation = [];
+  const handleReservation = (choosenSeat) => {
+    const updatedReservation = getUpdatedReservation(
+      choosenSeat,
+      reservation,
+      seatsToReserve
+    );
 
-    if (choosenSeat.reservedByMe) {
-      updatedReservation = reservation.filter((s) => s.id !== choosenSeat.id);
+    if (updatedReservation) {
       notyfication && setNotyfication("");
-    } else if (reservation.length < seatsToReserve) {
-      updatedReservation.push(...reservation, choosenSeat);
+      const updatedSeats = getUpdatedSeats(seats, choosenSeat);
+      batch(() => {
+        dispatch(editSeats(updatedSeats));
+        dispatch(setReservation(updatedReservation));
+      });
     } else {
       setNotyfication(
         "Nie możesz zarezerwować więcej miejsc.\n " +
           "Usuń któreś z wybranych miejsc."
       );
-      return;
-    }
-
-    return updatedReservation;
-  };
-
-  const getUpdatedSeats = (choosenSeat) => {
-    return produce(seats, (draft) => {
-      draft.forEach((row) => {
-        row.forEach((seat) => {
-          if (seat.id === choosenSeat.id) {
-            seat.reserved = !seat.reserved;
-            seat.reservedByMe = !seat.reservedByMe;
-          }
-        });
-      });
-    });
-  };
-
-  const convertSeatsToReserved = () => {
-    return produce(seats, (draft) => {
-      draft.forEach((row) => {
-        row.forEach((seat) => {
-          if (seat.reservedByMe) {
-            seat.reservedByMe = false;
-          }
-        });
-      });
-    });
-  };
-
-  const handleReservation = (choosenSeat) => {
-    const updatedReservation = getUpdatedReservation(choosenSeat);
-
-    if (updatedReservation) {
-      const updatedSeats = getUpdatedSeats(choosenSeat);
-      batch(() => {
-        dispatch(editSeats(updatedSeats));
-        dispatch(setReservation(updatedReservation));
-      });
     }
   };
 
   const handleConfirmation = () => {
-    const updatedSeats = convertSeatsToReserved();
+    const updatedSeats = convertSeatsToReserved(seats);
     const updatedSeatsAvailable = seatsAvailable - seatsToReserve;
     const maxSeatsNextToEachOther = getMaxSeatsNextToEachOther(seats);
 
