@@ -8,6 +8,7 @@ import { restoreSeats, editSeats, updateSeats } from "slices/seatsSlice";
 import { Seat } from "components";
 import "./Reservation.css";
 import {
+  links,
   getUpdatedSeats,
   getUpdatedReservation,
   getMaxSeatsNextToEachOther,
@@ -31,9 +32,9 @@ export const Reservation = () => {
   useEffect(() => {
     return () => {
       if (
-        history.location.pathname !== "/summary" &&
+        history.location.pathname !== "/rezerwacja-miejsc/summary" &&
         reservation.length > 0 &&
-        !history.location.pathname.startsWith("/reservation")
+        !history.location.pathname.startsWith("/rezerwacja-miejsc/reservation")
       ) {
         batch(() => {
           dispatch(restoreSeats());
@@ -81,7 +82,7 @@ export const Reservation = () => {
       );
     });
 
-    history.replace("/summary");
+    history.replace(links.summary);
   };
 
   return (

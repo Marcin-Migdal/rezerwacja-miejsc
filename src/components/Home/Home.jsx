@@ -4,6 +4,7 @@ import { seatsSelector } from "slices/seatsSlice";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import "./Home.css";
+import { links } from "helper";
 
 export const Home = () => {
   const inputRef = useRef();
@@ -32,7 +33,7 @@ export const Home = () => {
       setNotyfication("Ilość miejsc nie może być ujemna");
       setSeatsToReserve(0);
     } else {
-      setNotyfication("Maksymalna ilość dostępnych miejsc: " + maxInputValue);
+      setNotyfication(`Maksymalna ilość dostępnych miejsc: ${maxInputValue}`);
       setSeatsToReserve(maxInputValue);
     }
   };
@@ -41,14 +42,16 @@ export const Home = () => {
     if (maxSeatsNextToEachOther < seatsToReserve && !nextToEachOther) {
       setSeatsToReserve(maxSeatsNextToEachOther);
       setNotyfication(
-        "Maksymalna ilość dostępnych miejsc: " + maxSeatsNextToEachOther
+        `Maksymalna ilość dostępnych miejsc: ${maxSeatsNextToEachOther}`
       );
+    } else if (nextToEachOther && notyfication) {
+      setNotyfication("");
     }
     setNextToEachOther(!nextToEachOther);
   };
 
   const goToReservationPage = () => {
-    history.push("/reservation/" + seatsToReserve + "/" + nextToEachOther);
+    history.push(`${links.reservation}/${seatsToReserve}/${nextToEachOther}`);
   };
 
   return (

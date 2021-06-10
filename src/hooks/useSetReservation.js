@@ -1,4 +1,4 @@
-import { getReservedSeats } from "helper";
+import { getReservedSeats, links } from "helper";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import { setReservation } from "slices/reservationSlice";
@@ -17,7 +17,7 @@ export const useSetReservation = (seatsToReserve, nextToEachOther) => {
         dispatch(setPrevSeats({ seats, seatsAvailable }));
       } else if (nextToEachOther === "true") {
         if (maxSeatsNextToEachOther < seatsToReserve) {
-          history.replace("/");
+          history.replace(links.home);
         }
         const { updatedSeats, updatedReservations } = getReservedSeats(seats, seatsToReserve);
         batch(() => {
@@ -26,7 +26,7 @@ export const useSetReservation = (seatsToReserve, nextToEachOther) => {
           dispatch(setReservation(updatedReservations));
         });
       } else {
-        history.replace("/");
+        history.replace(links.home);
       }
       setHasReservedSeats(true)
     }

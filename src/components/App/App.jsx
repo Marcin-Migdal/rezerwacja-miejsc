@@ -4,6 +4,7 @@ import { Home, Reservation, Summary } from "components";
 import { useDispatch, useSelector } from "react-redux";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { fetchSeats, seatsSelector } from "slices/seatsSlice";
+import { links } from "helper";
 
 export const App = () => {
   const dispatch = useDispatch();
@@ -17,13 +18,13 @@ export const App = () => {
     <div className="App">
       {state === "loaded" ? (
         <Switch>
-          <Home exact path="/" />
+          <Home exact path={links.home} />
           <Route
-            path="/reservation/:seatsToReserve/:nextToEachOther"
+            path={`${links.reservation}/:seatsToReserve/:nextToEachOther`}
             component={Reservation}
           />
-          <Route path="/summary" component={Summary} />
-          <Route render={() => <Redirect to={{ pathname: "/" }} />} />
+          <Route path={links.summary} component={Summary} />
+          <Route render={() => <Redirect to={{ pathname: links.home }} />} />
         </Switch>
       ) : state === "error" ? (
         <div className="error">Wystąpił bład</div>
