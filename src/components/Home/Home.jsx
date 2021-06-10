@@ -53,6 +53,7 @@ export const Home = () => {
 
   return (
     <div className="home-container">
+      <h1 className="app-title">Rezerwacja miejsc</h1>
       <p className="notyfication">{notyfication}</p>
       <label className="label-text">
         Liczba miejsc:

@@ -1,9 +1,19 @@
 .home-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   padding: 3rem 4rem;
   box-shadow: 2px 2px 4px grey;
+}
+
+.app-title {
+  position: absolute;
+  top: -12.5vh;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 3rem;
 }
 
 .label-text {
