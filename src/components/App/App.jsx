@@ -19,10 +19,7 @@ export const App = () => {
       {state === "loaded" ? (
         <Switch>
           <Home exact path={links.home} />
-          <Route
-            path={`${links.reservation}/:seatsToReserve/:nextToEachOther`}
-            component={Reservation}
-          />
+          <Route path={links.reservationWithArgs} component={Reservation} />
           <Route path={links.summary} component={Summary} />
           <Route render={() => <Redirect to={{ pathname: links.home }} />} />
         </Switch>

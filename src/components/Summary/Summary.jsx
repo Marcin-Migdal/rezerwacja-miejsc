@@ -34,7 +34,6 @@ export const Summary = () => {
       <h2>
         Dziękujemy! W razie problemów prosimy o kontakt z działem administracji.
       </h2>
-
       <Button
         onClick={() => history.replace(links.home)}
         content="Strona główna"

@@ -1,7 +1,6 @@
-const ghDomain = '/rezerwacja-miejsc';
-
 export const links = {
-  home: ghDomain,
-  reservation: `${ghDomain}/reservation`,
-  summary: `${ghDomain}/summary`
+  home: '/',
+  reservation: '/reservation',
+  reservationWithArgs: '/reservation/:seatsToReserve/:nextToEachOther',
+  summary: '/summary'
 }

@@ -1,6 +1,6 @@
-import { getReservedSeats, links } from "helper";
-import { useEffect, useState } from "react";
 import { useHistory } from "react-router";
+import { useEffect, useState } from "react";
+import { getReservedSeats, links } from "helper";
 import { setReservation } from "slices/reservationSlice";
 import { batch, useDispatch, useSelector } from "react-redux";
 import { editSeats, seatsSelector, setPrevSeats } from "slices/seatsSlice";

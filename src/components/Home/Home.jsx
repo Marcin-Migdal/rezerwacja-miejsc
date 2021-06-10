@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { seatsSelector } from "slices/seatsSlice";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
-import "./Home.css";
 import { links } from "helper";
+import "./Home.css";
 
 export const Home = () => {
   const inputRef = useRef();
@@ -56,7 +56,7 @@ export const Home = () => {
 
   return (
     <div className="home-container">
-      <h1 className="app-title">Rezerwacja miejsc działa ?</h1>
+      <h1 className="app-title">Rezerwacja Miejsc</h1>
       <p className="notyfication">{notyfication}</p>
       <label className="label-text">
         Liczba miejsc:

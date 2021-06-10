@@ -32,9 +32,9 @@ export const Reservation = () => {
   useEffect(() => {
     return () => {
       if (
-        history.location.pathname !== "/rezerwacja-miejsc/summary" &&
+        history.location.pathname !== links.summary &&
         reservation.length > 0 &&
-        !history.location.pathname.startsWith("/rezerwacja-miejsc/reservation")
+        !history.location.pathname.startsWith(links.reservation)
       ) {
         batch(() => {
           dispatch(restoreSeats());

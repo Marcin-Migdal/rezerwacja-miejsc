@@ -1,7 +1,6 @@
 {
   "name": "reservation-app",
   "version": "0.1.0",
-  "homepage": "http://Marcin-Migdal.github.io/rezerwacja-miejsc",
   "private": true,
   "dependencies": {
     "@reduxjs/toolkit": "^1.5.1",
@@ -20,8 +19,6 @@
     "semantic-ui-react": "^2.0.3"
   },
   "scripts": {
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -42,7 +39,5 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {
-    "gh-pages": "^3.2.0"
-  }
+  "devDependencies": {}
 }
