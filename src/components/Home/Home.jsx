@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { seatsSelector } from "slices/seatsSlice";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { links } from "helper";
+import { links } from "utils";
 import "./Home.css";
 
 export const Home = () => {

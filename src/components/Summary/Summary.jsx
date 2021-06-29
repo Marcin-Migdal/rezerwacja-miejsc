@@ -3,7 +3,7 @@ import { useHistory } from "react-router";
 import { Button } from "semantic-ui-react";
 import { useDispatch, useSelector } from "react-redux";
 import { clearReservation, reservationSelector } from "slices/reservationSlice";
-import { links } from "helper";
+import { links } from "utils";
 import "./Summary.css";
 
 export const Summary = () => {

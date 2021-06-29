@@ -1,9 +1,9 @@
 import { useHistory } from "react-router";
 import { useEffect, useState } from "react";
-import { getReservedSeats, links } from "helper";
-import { setReservation } from "slices/reservationSlice";
-import { batch, useDispatch, useSelector } from "react-redux";
-import { editSeats, seatsSelector, setPrevSeats } from "slices/seatsSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { editSeats, seatsSelector } from "slices/seatsSlice";
+import { getReservedSeats, resetSeatsReservedByMe } from "helper";
+import { links } from "utils";
 
 export const useSetReservation = (seatsToReserve, nextToEachOther) => {
   const history = useHistory();
@@ -11,31 +11,37 @@ export const useSetReservation = (seatsToReserve, nextToEachOther) => {
   const [hasReservedSeats, setHasReservedSeats] = useState(false);
   const { seats, seatsAvailable, maxSeatsNextToEachOther } = useSelector(seatsSelector)
 
+  const [maxSeatsAvailable] = useState(
+    nextToEachOther === "true" ? maxSeatsNextToEachOther : seatsAvailable
+  );
+
   useEffect(() => {
     if (!hasReservedSeats) {
-      if (nextToEachOther === "false") {
-        dispatch(setPrevSeats({ seats, seatsAvailable }));
-      } else if (nextToEachOther === "true") {
-        if (maxSeatsNextToEachOther < seatsToReserve) {
-          history.replace(links.home);
-        }
-        const { updatedSeats, updatedReservations } = getReservedSeats(seats, seatsToReserve);
-        batch(() => {
-          dispatch(setPrevSeats({ seats, seatsAvailable }));
-          dispatch(editSeats(updatedSeats));
-          dispatch(setReservation(updatedReservations));
-        });
-      } else {
+      if (
+        (nextToEachOther !== "false" && nextToEachOther !== "true") ||
+        maxSeatsAvailable < seatsToReserve
+      ) {
         history.replace(links.home);
+      }
+      if (nextToEachOther === "true") {
+        dispatch(editSeats(getReservedSeats(seats, seatsToReserve)));
       }
       setHasReservedSeats(true)
     }
+
+    return () => {
+      if (
+        history.location.pathname !== links.summary &&
+        !history.location.pathname.startsWith(links.reservation)
+      ) {
+        dispatch(editSeats(resetSeatsReservedByMe(seats)));
+      }
+    };
   }, [
     dispatch,
     history,
     seats,
-    seatsAvailable,
-    maxSeatsNextToEachOther,
+    maxSeatsAvailable,
     seatsToReserve,
     nextToEachOther,
     hasReservedSeats

@@ -4,7 +4,7 @@ import { Home, Reservation, Summary } from "components";
 import { useDispatch, useSelector } from "react-redux";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { fetchSeats, seatsSelector } from "slices/seatsSlice";
-import { links } from "helper";
+import { links } from "utils";
 
 export const App = () => {
   const dispatch = useDispatch();

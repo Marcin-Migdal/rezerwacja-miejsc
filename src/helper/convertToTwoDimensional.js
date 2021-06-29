@@ -6,13 +6,8 @@ export const convertToTwoDimensonal = (seats) => {
     const prevCords = seats[index - 1]?.cords;
     const { cords } = seat;
 
-    if (cords.x > seats[index - 1]?.cords.x) {
-      twoDimensonal.push(seatsInRow);
-      seatsInRow = [];
-    }
-
-    if (cords.x !== seats[index - 1]?.cords.x && cords.y !== 0) {
-      for (let i = 1; i < cords.y + 1; i++) {
+    if (cords.x !== prevCords?.x && cords.y !== 0) {
+      for (let i = 0; i < cords.y; i++) {
         seatsInRow.push({ isEmptySpace: true });
       }
     }
@@ -25,7 +20,7 @@ export const convertToTwoDimensonal = (seats) => {
 
     seatsInRow.push({ ...seat, reservedByMe: false });
 
-    if (seats[index + 1]?.cords.x === undefined) {
+    if (!seats[index + 1] || cords.x < seats[index + 1]?.cords.x) {
       twoDimensonal.push(seatsInRow);
       seatsInRow = [];
     }
