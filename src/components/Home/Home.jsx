@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { seatsSelector } from "slices/seatsSlice";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { links } from "utils";
 import "./Home.css";
 
 export const Home = () => {
@@ -32,7 +33,7 @@ export const Home = () => {
       setNotyfication("Ilość miejsc nie może być ujemna");
       setSeatsToReserve(0);
     } else {
-      setNotyfication("Maksymalna ilość dostępnych miejsc: " + maxInputValue);
+      setNotyfication(`Maksymalna ilość dostępnych miejsc: ${maxInputValue}`);
       setSeatsToReserve(maxInputValue);
     }
   };
@@ -41,18 +42,21 @@ export const Home = () => {
     if (maxSeatsNextToEachOther < seatsToReserve && !nextToEachOther) {
       setSeatsToReserve(maxSeatsNextToEachOther);
       setNotyfication(
-        "Maksymalna ilość dostępnych miejsc: " + maxSeatsNextToEachOther
+        `Maksymalna ilość dostępnych miejsc: ${maxSeatsNextToEachOther}`
       );
+    } else if (nextToEachOther && notyfication) {
+      setNotyfication("");
     }
     setNextToEachOther(!nextToEachOther);
   };
 
   const goToReservationPage = () => {
-    history.push("/reservation/" + seatsToReserve + "/" + nextToEachOther);
+    history.push(`${links.reservation}/${seatsToReserve}/${nextToEachOther}`);
   };
 
   return (
     <div className="home-container">
+      <h1 className="app-title">Rezerwacja Miejsc</h1>
       <p className="notyfication">{notyfication}</p>
       <label className="label-text">
         Liczba miejsc:

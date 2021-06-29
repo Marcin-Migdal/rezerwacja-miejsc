@@ -9,10 +9,8 @@ const reservationSlice = createSlice({
   name: 'reservation',
   initialState,
   reducers: {
-    setReservation: (state, { payload }) => {
+    completeReservation: (state, { payload }) => {
       state.reservation = payload
-    },
-    completeReservation: (state) => {
       state.isComplete = true
     },
     clearReservation: (state) => {
@@ -22,7 +20,7 @@ const reservationSlice = createSlice({
   }
 });
 
-export const { setReservation, completeReservation, clearReservation } = reservationSlice.actions;
+export const { completeReservation, clearReservation } = reservationSlice.actions;
 
 export const reservationSelector = (state) => state.reservation;
 

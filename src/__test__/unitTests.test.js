@@ -6,7 +6,6 @@ import {
   getMaxSeatsNextToEachOther,
   convertSeatsToReserved,
   convertToTwoDimensonal,
-  getUpdatedReservation,
   getReservedSeats,
   getUpdatedSeats
 } from 'helper';
@@ -72,17 +71,6 @@ test('Get updated seats', async () => {
 
   expect(updatedSeats[choosenSeat.cords.x][choosenSeat.cords.y].reserved).toBe(!choosenSeat.reserved);
   expect(updatedSeats[choosenSeat.cords.x][choosenSeat.cords.y].reservedByMe).toBe(!choosenSeat.reservedByMe);
-});
-
-test('Get updated reservation', async () => {
-  const { twoDimensonal } = await fetchMockedSeats();
-  const choosenSeat = getFirstSeat(twoDimensonal);
-  const reservation = [];
-  const seatsToReserve = 4;
-
-  const updatedReservation = getUpdatedReservation(choosenSeat, reservation, seatsToReserve);
-
-  expect(updatedReservation[0].id).toBe(choosenSeat.id);
 });
 
 test('Get seats that user reserved converted to not reserved by him', async () => {

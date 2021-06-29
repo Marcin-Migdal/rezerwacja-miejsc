@@ -3,6 +3,7 @@ import { useHistory } from "react-router";
 import { Button } from "semantic-ui-react";
 import { useDispatch, useSelector } from "react-redux";
 import { clearReservation, reservationSelector } from "slices/reservationSlice";
+import { links } from "utils";
 import "./Summary.css";
 
 export const Summary = () => {
@@ -11,7 +12,7 @@ export const Summary = () => {
   const { reservation, isComplete } = useSelector(reservationSelector);
 
   useEffect(() => {
-    !isComplete && history.replace("/");
+    !isComplete && history.replace(links.home);
     return () => {
       isComplete && dispatch(clearReservation());
     };
@@ -33,8 +34,10 @@ export const Summary = () => {
       <h2>
         Dziękujemy! W razie problemów prosimy o kontakt z działem administracji.
       </h2>
-
-      <Button onClick={() => history.replace("/")} content="Strona główna" />
+      <Button
+        onClick={() => history.replace(links.home)}
+        content="Strona główna"
+      />
     </div>
   );
 };

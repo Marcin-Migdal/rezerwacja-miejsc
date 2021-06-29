@@ -3,9 +3,6 @@ import axiosGetSeats from "api/axiosGetSeats";
 import { convertToTwoDimensonal, getMaxSeatsNextToEachOther } from "helper";
 
 const initialState = {
-  prevSeats: [],
-  prevSeatsAvailable: 0,
-
   seats: [],
   seatsAvailable: 0,
   maxSeatsNextToEachOther: 0,
@@ -34,16 +31,8 @@ const seatsSlice = createSlice({
     updateSeats: (state, { payload }) => {
       state.seats = payload.updatedSeats
       state.seatsAvailable = payload.updatedSeatsAvailable
-      state.maxSeatsNextToEachOther = payload.maxSeatsNextToEachOther
+      state.maxSeatsNextToEachOther = getMaxSeatsNextToEachOther(state.seats)
     },
-    setPrevSeats: (state, { payload }) => {
-      state.prevSeats = payload.seats
-      state.prevSeatsAvailable = payload.seatsAvailable
-    },
-    restoreSeats: (state) => {
-      state.seats = state.prevSeats
-      state.seatsAvailable = state.prevSeatsAvailable
-    }
   }
 });
 
@@ -53,8 +42,6 @@ export const {
   getSeatsFailure,
   editSeats,
   updateSeats,
-  setPrevSeats,
-  restoreSeats
 } = seatsSlice.actions;
 
 export const seatsSelector = (state) => state.seats;

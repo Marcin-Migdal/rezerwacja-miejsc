@@ -1,8 +1,7 @@
-import axios from "axios";
+import seatResponse from './mockedResponse'
 
 const axiosGetSeats = async () => {
-  return axios.get('http://localhost:3000/seats')
-    .then((res) => res.data)
+  return Promise.resolve(seatResponse)
 }
 
 export default axiosGetSeats;

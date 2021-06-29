@@ -1,7 +1,6 @@
 import produce from "immer";
 
 export const getReservedSeats = (seats, seatsToReserve) => {
-  let updatedReservations = [];
   let seatCords = { row: 0, seat: 0 };
 
   seats.some((row, rowIndex) => {
@@ -27,9 +26,8 @@ export const getReservedSeats = (seats, seatsToReserve) => {
     for (let i = 0; i < seatsToReserve; i++) {
       draft[seatCords.row][seatCords.seat + i].reserved = true;
       draft[seatCords.row][seatCords.seat + i].reservedByMe = true;
-      updatedReservations.push(seats[seatCords.row][seatCords.seat + i]);
     }
   });
 
-  return { updatedSeats, updatedReservations };
-};
+  return updatedSeats;
+}
